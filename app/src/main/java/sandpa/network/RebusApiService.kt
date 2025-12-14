@@ -1,17 +1,3 @@
-/*package sandpa.vafex.rebus_ro.network
-import sandpa.vafex.rebus_ro.data.Rebus
-
-
-import retrofit2.http.GET
-
-/**
- * Interfața care definește cum să accesezi resursa JSON.
- */
-interface RebusApiService {
-    // Adnotarea @GET specifică calea relativă către resursa JSON
-    @GET("rebusuri.json")
-    suspend fun getRebusuri():  List<Rebus> //RebusList
-}*/
 package sandpa.vafex.rebus_ro.network
 
 import com.squareup.moshi.Moshi
