@@ -14,7 +14,8 @@ data class Rebus(
     // Definițiile sunt acum sub-obiecte
     @Json(name = "definitii") val definitiiContainer: DefinitiiContainer, // <-- Container
 
-    @Json(name = "grila") val grila: List<List<String>>
+    @Json(name = "grila") val grila: List<List<String>>,
+    @Json(name = "matrice_verificare") val matriceVerificare: List<List<String>>
 )
 
 @JsonClass(generateAdapter = true)
@@ -22,4 +23,3 @@ data class DefinitiiContainer(
     @Json(name = "orizontal") val orizontal: List<String>, // <-- Listă simplă de String
     @Json(name = "vertical") val vertical: List<String>    // <-- Listă simplă de String
 )
-

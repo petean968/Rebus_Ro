@@ -10,7 +10,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 object NetworkModule {
     // Adresa de bază corectă
     private const val BASE_URL =
-        "https://gist.githubusercontent.com/petean968/1a511d63553b380db7cc432cba5801ab/raw/8b30b5a2a7ca920d3442d5b28aa03b700cd17d57/"
+        "https://gist.githubusercontent.com/petean968/1a511d63553b380db7cc432cba5801ab/raw /"
 
     // Construim Moshi
     private val moshi = Moshi.Builder()
@@ -30,4 +30,3 @@ object NetworkModule {
     val rebusService: RebusApiService =
         retrofit.create(RebusApiService::class.java)
 }
-

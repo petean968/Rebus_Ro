@@ -76,7 +76,7 @@ class RebusViewModel(
         }
     }
 
-// Funcție pentru a transforma grila de String-uri în grila de Cell-uri
+    // Funcție pentru a transforma grila de String-uri în grila de Cell-uri
     private fun mapRebusToCells(rebus: Rebus): List<List<Cell>> {
         var indexCounter = 1
 

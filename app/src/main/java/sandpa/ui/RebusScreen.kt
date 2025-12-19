@@ -1,4 +1,5 @@
 
+
 package sandpa.vafex.rebus_ro.ui
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -114,6 +115,7 @@ private fun RebusContent(
                 // 2. Grila (include indicii pe stânga)
                 RebusGrid(
                     grid = rebusState.grid,
+                    matriceVerificare = rebus.matriceVerificare,
                     selectedCell = rebusState.selectedCell,
                     onCellClick = viewModel::selectCell
                 )
@@ -169,6 +171,7 @@ private fun RebusContent(
 @Composable
 fun RebusCell(
     cell: Cell,
+    matriceVerificare: List<List<String>>?,
     modifier: Modifier = Modifier,
     isSelected: Boolean = false,
     onCellClick: (row: Int, col: Int) -> Unit
@@ -176,6 +179,12 @@ fun RebusCell(
     // Folosim isBlack din Cell, care este setat în ViewModel
     val isBlackCell = cell.isBlack
     val cellSize = 50.dp
+    val literaCorecta = matriceVerificare?.getOrNull(cell.row)?.getOrNull(cell.col)
+    val esteCorect = !isBlackCell &&
+            cell.userInput.isNotEmpty() &&
+            cell.userInput.equals(literaCorecta, ignoreCase = true)
+    val esteGresit = cell.userInput.isNotEmpty() &&
+            !cell.userInput.equals(literaCorecta, ignoreCase = true)
 
     Box(
         modifier = modifier
@@ -189,6 +198,8 @@ fun RebusCell(
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = when {
+                esteCorect -> Color(0xFF4CAF50)
+                esteGresit -> Color(0xFFE53935)// VERDE dacă e corect!
                 isSelected -> Color(0xFFFDD835) // Galben pentru selecție
                 isBlackCell -> Color.Black
                 else -> Color.White
@@ -197,18 +208,7 @@ fun RebusCell(
             if (!isBlackCell) {
                 Box(modifier = Modifier.fillMaxSize()) {
 
-                    // 1. INDICELE DE START (mic)
-                    /*if (cell.index != null) {
-                        Text(
-                            text = cell.index.toString(),
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.DarkGray,
-                            modifier = Modifier
-                                .align(Alignment.TopStart)
-                                .padding(2.dp)
-                        )
-                    }*/
+
 
                     // 2. CONȚINUTUL CELULEI (Litera utilizatorului)
                     Box(
@@ -232,6 +232,7 @@ fun RebusCell(
 @Composable
 private fun RebusGrid(
     grid: List<List<Cell>>,
+    matriceVerificare: List<List<String>>?,
     selectedCell: Pair<Int, Int>?,
     onCellClick: (row: Int, col: Int) -> Unit
 ) {
@@ -283,6 +284,7 @@ private fun RebusGrid(
 
                     RebusCell(
                         cell = cell,
+                        matriceVerificare = matriceVerificare,
                         isSelected = isSelected,
                         onCellClick = onCellClick
                     )
@@ -354,72 +356,7 @@ private fun KeyboardInput(
         }
     }
 }
-/*@Composable
-private fun KeyboardInput(
-    onLetterSubmit: (String) -> Unit,
-    onDismiss: () -> Unit
-) {
-    var letter by remember { mutableStateOf("") }
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 12.dp)
-            .background(Color(0xFFE0E0E0), shape = MaterialTheme.shapes.small)
-            .padding(8.dp),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = "Tastatură:",
-            fontWeight = FontWeight.Medium,
-            modifier = Modifier.padding(end = 8.dp)
-        )
-
-        OutlinedTextField(
-            value = letter,
-            onValueChange = { newValue ->
-                // Permite o singură literă, majusculă
-                letter = newValue.take(1).uppercase()
-            },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(
-                capitalization = KeyboardCapitalization.Characters
-            ),
-            textStyle = TextStyle(
-                fontSize = 20.sp,
-                textAlign = TextAlign.Center,
-                fontWeight = FontWeight.Bold
-            ),
-            modifier = Modifier.width(60.dp),
-        )
-
-        Spacer(modifier = Modifier.width(12.dp))
-
-        Button(
-            onClick = {
-                if (letter.isNotEmpty()) {
-                    onLetterSubmit(letter)
-                    letter = ""
-                    // Nu apelăm onDismiss AICI, ci lăsăm utilizatorul să introducă mai multe litere
-                }
-            },
-            enabled = letter.isNotEmpty()
-        ) {
-            Text("OK")
-        }
-
-        Spacer(modifier = Modifier.width(12.dp))
-
-        // Buton de închidere (Deselectare)
-        Button(
-            onClick = onDismiss,
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
-        ) {
-            Text("X")
-        }
-    }
-}*/
 
 // ======================================================
 // 5. UTIL

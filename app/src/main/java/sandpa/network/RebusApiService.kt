@@ -20,7 +20,7 @@ private const val BASE_URL =
  * Retrofit va implementa această interfață.
  */
 interface RebusApiService {
-    @GET("petean968/1a511d63553b380db7cc432cba5801ab/raw/8b30b5a2a7ca920d3442d5b28aa03b700cd17d57/rebusuri.json")
+    @GET("petean968/1a511d63553b380db7cc432cba5801ab/raw/rebusuri.json")
     // ATENȚIE: JSON-ul este o Listă de obiecte Rebus!
     suspend fun getRebusList(): List<Rebus>
 }
