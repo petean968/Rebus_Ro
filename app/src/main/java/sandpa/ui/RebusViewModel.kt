@@ -52,29 +52,40 @@ class RebusViewModel(
     private val _uiState = MutableStateFlow<RebusUiState>(RebusUiState.Loading)
     val uiState: StateFlow<RebusUiState> = _uiState.asStateFlow()
 
+    private val _selectedRebus = MutableStateFlow<Rebus?>(null)
+    val selectedRebus = _selectedRebus.asStateFlow()
+
+    private val _isGameWon = MutableStateFlow(false)
+    val isGameWon = _isGameWon.asStateFlow()
+
     init {
-        loadRebus()
+        //loadRebus()
+        fetchRebusList()
     }
 
-    private fun loadRebus() {
+    private fun fetchRebusList() {
         viewModelScope.launch {
             try {
-                // Obține lista de rebusuri
                 val rebusList = repository.getRebusList()
                 _uiState.value = RebusUiState.Success(rebusList)
-
-                val rebus = rebusList.firstOrNull()
-                if (rebus != null) {
-                    // Inițializarea grilei de celule la încărcare
-                    _state.update {
-                        it.copy(grid = mapRebusToCells(rebus))
-                    }
-                }
+                // AM ȘTERS: Partea care făcea _state.update cu primul rebus
             } catch (e: Exception) {
-                _uiState.value = RebusUiState.Error("Eroare la încărcarea rebusului: ${e.localizedMessage}")
+                _uiState.value = RebusUiState.Error("Eroare la încărcare: ${e.localizedMessage}")
             }
         }
     }
+
+    fun onRebusSelected(rebus: Rebus) {
+        _selectedRebus.value = rebus
+        _state.update {
+            it.copy(
+                grid = mapRebusToCells(rebus), // Folosește funcția ta existentă
+                selectedCell = null
+            )
+        }
+    }
+
+
 
     // Funcție pentru a transforma grila de String-uri în grila de Cell-uri
     private fun mapRebusToCells(rebus: Rebus): List<List<Cell>> {
@@ -118,11 +129,12 @@ class RebusViewModel(
         }
 
         _state.update { currentState ->
-            val newSelectedCell = if (currentState.selectedCell?.first == row && currentState.selectedCell?.second == col) {
-                null // Deselectează (la dublu click sau apăsare pe aceeași celulă)
-            } else {
-                Pair(row, col) // Selectează noua celulă
-            }
+            val newSelectedCell =
+                if (currentState.selectedCell?.first == row && currentState.selectedCell?.second == col) {
+                    null // Deselectează (la dublu click sau apăsare pe aceeași celulă)
+                } else {
+                    Pair(row, col) // Selectează noua celulă
+                }
             currentState.copy(selectedCell = newSelectedCell)
         }
     }
@@ -133,29 +145,48 @@ class RebusViewModel(
 
     fun setLetter(letter: String) {
         _state.update { currentState ->
-            val selected = currentState.selectedCell
-
-            // Verifică dacă există o celulă selectată. Dacă NU, returnează starea curentă.
-            if (selected == null) {
-                return@update currentState // ⚠️ Folosim return@update pentru a returna starea
-            }
-
+            val selected = currentState.selectedCell ?: return@update currentState
             val (r, c) = selected
 
-            // 1. Creează o nouă listă (nouă grilă)
-            val newGrid = currentState.grid.mapIndexed { row, rowList ->
-                rowList.mapIndexed { col, cell ->
-                    // 2. Modifică doar celula selectată
-                    if (row == r && col == c) {
-                        cell.copy(userInput = letter.uppercase()) // Actualizează userInput
+            // 1. Creăm noua grilă cu litera nouă
+            val newGrid = currentState.grid.mapIndexed { rowIdx, rowList ->
+                rowList.mapIndexed { colIdx, cell ->
+                    if (rowIdx == r && colIdx == c) {
+                        cell.copy(userInput = letter.uppercase())
                     } else {
                         cell
                     }
                 }
             }
-            // 3. Returnează noua stare
-            currentState.copy(grid = newGrid) // ⚠️ Returnează RebusState
+
+            // 2. Verificăm victoria imediat după ce am creat newGrid
+            val rebusCurent = _selectedRebus.value
+            if (rebusCurent != null) {
+                // Dacă checkVictory returnează true, ridicăm flag-ul
+                if (checkVictory(newGrid, rebusCurent.matriceVerificare)) {
+                    _isGameWon.value = true
+                }
+            }
+
+            // 3. Returnăm starea cu noua grilă
+            currentState.copy(grid = newGrid)
         }
     }
 
+    private fun checkVictory(currentGrid: List<List<Cell>>, solution: List<List<String>>): Boolean {
+        currentGrid.forEachIndexed { r, row ->
+            row.forEachIndexed { c, cell ->
+                // Verificăm doar celulele care nu sunt negre
+                if (!cell.isBlack) {
+                    val correctChar = solution.getOrNull(r)?.getOrNull(c) ?: ""
+                    // Dacă o singură celulă nu coincide sau e goală, returnăm false
+                    if (!cell.userInput.equals(correctChar, ignoreCase = true)) {
+                        return false
+                    }
+                }
+            }
+        }
+        return true // Dacă am trecut prin toate și sunt corecte, returnăm true
+
+    }
 }

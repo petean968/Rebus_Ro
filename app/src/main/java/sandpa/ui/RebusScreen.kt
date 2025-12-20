@@ -4,6 +4,9 @@ package sandpa.vafex.rebus_ro.ui
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow // (Acesta ar trebui să existe deja)
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 // ...
 
 import androidx.compose.foundation.BorderStroke
@@ -33,16 +36,22 @@ import sandpa.vafex.rebus_ro.data.Rebus
 // ======================================================
 // 1. ECRAN PRINCIPAL
 // ======================================================
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RebusScreen(
-    viewModel: RebusViewModel = viewModel()
+    viewModel: RebusViewModel = viewModel(),
+    onWin: () -> Unit
 ) {
-    // Colectează starea de încărcare/eroare (uiState) și starea grilei (state)
+    val isWon by viewModel.isGameWon.collectAsState()//victory sensor
+
+    LaunchedEffect(isWon) {
+        if (isWon) {
+            onWin() // Aici se întâmplă magia: navigarea către RewardScreen!
+        }
+    }
     val uiState by viewModel.uiState.collectAsState()
     val rebusState by viewModel.state.collectAsState()
+    val selectedRebus by viewModel.selectedRebus.collectAsState()
 
     Scaffold(
         topBar = {
@@ -56,26 +65,30 @@ fun RebusScreen(
                 .padding(paddingValues)
                 .padding(horizontal = 16.dp)
         ) {
-            when (val state = uiState) {
+            when (uiState) {
                 is RebusUiState.Loading -> LoadingScreen()
-                is RebusUiState.Error -> ErrorScreen(state.message)
+                is RebusUiState.Error -> ErrorScreen((uiState as RebusUiState.Error).message)
                 is RebusUiState.Success -> {
-                    val rebus = state.rebusList.firstOrNull()
-                    if (rebus != null) {
+                    // Verificăm dacă userul a ales un rebus din listă
+                    if (selectedRebus != null) {
                         RebusContent(
-                            rebus = rebus,
+                            rebus = selectedRebus!!,
                             rebusState = rebusState,
-                            viewModel = viewModel
+                            viewModel = viewModel,
+                            onWin = onWin // Pasăm funcția pentru Problema 2
                         )
                     } else {
-                        ErrorScreen("Nu s-au găsit date de rebus valide.")
+                        // Dacă suntem aici și selectedRebus e null, înseamnă că nu s-a făcut selecția corect
+                        ErrorScreen("Vă rugăm selectați un rebus din listă.")
                     }
                 }
-                else->Unit
+                else -> Unit
             }
         }
     }
 }
+
+
 
 // ======================================================
 // 2. CONTENT (Grilă și Definiții)
@@ -88,7 +101,8 @@ fun RebusScreen(
 private fun RebusContent(
     rebus: Rebus,
     rebusState: RebusState,
-    viewModel: RebusViewModel
+    viewModel: RebusViewModel,
+    onWin: () -> Unit//adaugata
 ) {
     // ⚠️ ATENȚIE: Aceste valori trebuie să se potrivească cu cele din RebusGrid
     val cellSize = 50.dp
@@ -350,15 +364,15 @@ private fun KeyboardInput(
         Button(
             onClick = onDismiss, // Aceasta deselectează celula și închide tastatura
             colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
-            modifier = Modifier.width(120.dp)
+            modifier = Modifier.fillMaxWidth(0.6f)
         ) {
-            Text("OFF (X)", fontWeight = FontWeight.Bold)
+            Text("OFF ", fontWeight = FontWeight.Bold)
         }
     }
 }
 
 
-// ======================================================
+// ====================================================== minte
 // 5. UTIL
 // ======================================================
 
