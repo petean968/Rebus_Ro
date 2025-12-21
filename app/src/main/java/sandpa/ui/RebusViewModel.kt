@@ -76,6 +76,7 @@ class RebusViewModel(
     }
 
     fun onRebusSelected(rebus: Rebus) {
+        _isGameWon.value = false
         _selectedRebus.value = rebus
         _state.update {
             it.copy(
@@ -83,6 +84,9 @@ class RebusViewModel(
                 selectedCell = null
             )
         }
+    }
+    fun resetVictory() {
+        _isGameWon.value = false
     }
 
 
