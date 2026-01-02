@@ -1,0 +1,6 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+Screenshot_*.png
+app/release/
+local.properties
