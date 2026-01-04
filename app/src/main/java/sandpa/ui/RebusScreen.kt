@@ -1,4 +1,4 @@
-
+/*de la XML la JetpackCompose*/
 
 package sandpa.vafex.rebus_ro.ui
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,12 +38,13 @@ import sandpa.vafex.rebus_ro.data.Rebus
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RebusScreen(
-    viewModel: RebusViewModel = viewModel(),
+    viewModel: RebusViewModel = viewModel(),//logica e in ViewModel
     onWin: () -> Unit
 ) {
-    val isWon by viewModel.isGameWon.collectAsState()//victory sensor
+    val isWon by viewModel.isGameWon.collectAsState()
+    //victory sensor;isGameWon il vede pe _isGameWon (cum e scris de la "centru")
 
-    LaunchedEffect(isWon) {
+    LaunchedEffect(isWon) {//Functie(s-aAprinsBeculVictoriei)
         if (isWon) {
             onWin() //  navigarea către RewardScreen
         }
@@ -64,7 +65,7 @@ fun RebusScreen(
                 .padding(paddingValues)
                 .padding(horizontal = 16.dp)
         ) {
-            when (uiState) {
+            when (uiState) {//semafor
                 is RebusUiState.Loading -> LoadingScreen()
                 is RebusUiState.Error -> ErrorScreen((uiState as RebusUiState.Error).message)
                 is RebusUiState.Success -> {
@@ -98,9 +99,9 @@ fun RebusScreen(
 // - funcția RebusContent (CORECTATĂ PENTRU CENTRARE VIZUALĂ ȘI DIMENSIUNI)
 
 @Composable
-private fun RebusContent(
+private fun RebusContent(//organizatorul
     rebus: Rebus,
-    rebusState: RebusState,
+    rebusState: RebusState,//clasorul cu etichete de borcan
     viewModel: RebusViewModel,
     onWin: () -> Unit//adaugata
 ) {
@@ -108,7 +109,7 @@ private fun RebusContent(
     val cellSize = 50.dp
     val indexSize = 30.dp
 
-    Column(
+    Column(//ca intr-o lista pe vertical
         modifier = Modifier.fillMaxSize()
     ) {
         // Titlul Rebusului
@@ -121,7 +122,7 @@ private fun RebusContent(
         // ----------------------------------------------------
         // GRILA CENTRATĂ VIZUAL
         // ----------------------------------------------------
-        Box(
+        Box(//cutia impingatoare spre centrul ecranului, centrare
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.Center // 1. Centrează conținutul
         ) {
@@ -147,7 +148,7 @@ private fun RebusContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(rememberScrollState())//derulare definitii
         ) {
             Text("Definiții Orizontale", fontWeight = FontWeight.Bold)
             rebus.definitiiContainer.orizontal.forEach {
@@ -163,7 +164,7 @@ private fun RebusContent(
         }
 
         // AFIȘEAZĂ TASTATURA NUMAI DACĂ O CELULĂ ESTE SELECTATĂ
-        if (rebusState.selectedCell != null) {
+        if (rebusState.selectedCell != null) {//apare tastatura numa' daca-ai pus degetul
             KeyboardInput(
                 onLetterSubmit = viewModel::setLetter,
                 // Logica de deselectare (pentru a închide tastatura)
@@ -182,14 +183,18 @@ private fun RebusContent(
 // ======================================================
 
 // 3A. Celula individuală
+//CUM FUNCTIONEAZA :
+//senzorul : "TAP(2,3)"->ViewModel(Dorele,muta "selectedCell"), scrie in (_state->@COMPOSE VEDE, O REFACE :
+// isSelected = true -> RebusCell : "ma colorez galben"
 @Composable
 fun RebusCell(
-    cell: Cell,
-    matriceVerificare: List<List<String>>?,
-    modifier: Modifier = Modifier,
-    isSelected: Boolean = false,
-    onCellClick: (row: Int, col: Int) -> Unit
+    cell: Cell,//borcanul de pe raft
+    matriceVerificare: List<List<String>>?,//foaia de control, cu gauri, ca la permisAuto
+    modifier: Modifier = Modifier,//instructiuni pentru croitor
+    isSelected: Boolean = false,//ai apasat pe casuta : NU
+    onCellClick: (row: Int, col: Int) -> Unit//senzorul de atingere
 ) {
+
     // Folosim isBlack din Cell, care este setat în ViewModel
     val isBlackCell = cell.isBlack
     val cellSize = 50.dp
@@ -261,7 +266,7 @@ private fun RebusGrid(
         Row(
             modifier = Modifier.padding(start = indexSize)
         ) {
-            (1..size).forEach { colIndex ->
+            (1..size).forEach { colIndex ->//loop care deseneaza
                 Box(
                     modifier = Modifier.size(cellSize),
                     contentAlignment = Alignment.BottomCenter
@@ -315,7 +320,7 @@ private fun RebusGrid(
 // RebusScreen.kt - funcția KeyboardInput (VERSIUNEA CUSTOM)
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun KeyboardInput(
+private fun KeyboardInput(//custom,Androida e mare
     onLetterSubmit: (String) -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -338,10 +343,10 @@ private fun KeyboardInput(
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.Top)
         ) {
-            alphabet.forEach { letter ->
-                Button(
+            alphabet.forEach { letter ->    //fiecare litera
+                Button(                     //cu butonul ei
                     onClick = {
-                        onLetterSubmit(letter)
+                        onLetterSubmit(letter)//apas "A",A->ViewModel->patratica selectata
                         // NOTĂ: Nu închidem automat, lăsăm utilizatorul să apese mai multe litere
                         // dacă am avea logica de avansare automată la următoarea celulă.
                         // vreau să se închidă automat, adăug onDismiss() aici.
@@ -389,3 +394,13 @@ private fun ErrorScreen(msg: String) {
         Text(msg, color = MaterialTheme.colorScheme.error, textAlign = TextAlign.Center)
     }
 }
+// Jetpack Compose -> desenator
+// care stă cu radiera în mână și redesenează doar bucățica de ecran
+// care s-a schimbat, de mii de ori pe secundă dacă e nevoie.
+//Datele stau în ViewModel.
+
+//UI-ul (RebusScreen) observă datele.
+//Dacă apeși pe o căsuță, se schimbă starea (selectedCell).
+//Compose observă că s-a schimbat starea și re-scanează codul.
+//La re-scanare, vede că selectedCell nu mai e null,
+//deci afișează tastatura și colorează căsuța în galben.

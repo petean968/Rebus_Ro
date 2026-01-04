@@ -29,7 +29,7 @@ fun RewardScreen(onBack: () -> Unit) {
     val context = LocalContext.current
     val mediaPlayer = remember {
         MediaPlayer.create(context, R.raw.solo_chitara_rebus_3)
-    }
+    }//pregateste sculele de cantare
 
     // Asta pornește muzica automat (solo-ul meu de chitară)
     LaunchedEffect(Unit) {
