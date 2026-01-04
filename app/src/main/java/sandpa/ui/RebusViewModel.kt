@@ -9,10 +9,32 @@ import kotlinx.coroutines.flow.update//buretele care sterge o litera
 import kotlinx.coroutines.launch//start Dorele!du-te la magazie
 import sandpa.vafex.rebus_ro.data.Rebus//adu rebusul
 import sandpa.vafex.rebus_ro.data.RebusRepository//magazia de rebusuri virtuala->JSON
-//COROUTINAS ESTE MODUL DE A SCRIE FUNCTII SINCRONE
+//COROUTINES ESTE MODUL DE A SCRIE FUNCTII SINCRONE
 
 //CARE                  //ASINCRON
         //SE EXECUTA
+//un exemplu, n-ar trebui pus aici, dar e bine de vazut:
+/*
+viewModelScope.launch {
+    // 1. Lansează prima comandă (nu blochează aici)
+
+    val taskRebus = async { RebusApi.retrofitService.getRebusList() }
+
+    // 2. Lansează a doua comandă imediat (tot în paralel)
+
+    val taskStiri = async { RebusApi.retrofitService.getNewsList() }
+
+    // 3. ACUM Dorel are nevoie de rezultate ca să le pună pe masă
+    // await() înseamnă: "Aștept până când pachetul e aici"
+
+    val listaFinalaRebus = taskRebus.await()
+    val listaFinalaStiri = taskStiri.await()
+
+    // Abia acum le folosim
+
+    _state.update { it.copy(rebusList = listaFinalaRebus) }
+}
+*/
 
 /*LOGICA DE STARE*/
 // ======================================================
@@ -158,7 +180,8 @@ class RebusViewModel(
     // 3. LOGICĂ TASTATURĂ/SELECTARE
 
      // Cand pun degetul pe casuta : TAP
-     // Selectează o celulă la click. Deselectează dacă este deja selectată sau dacă este celulă neagră.
+     // Selectează o celulă la click. Deselectează dacă este deja selectată
+     // sau dacă este celulă neagră.
 
     fun selectCell(row: Int, col: Int) {
         val currentGrid = _state.value.grid

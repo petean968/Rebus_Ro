@@ -184,8 +184,9 @@ private fun RebusContent(//organizatorul
 
 // 3A. Celula individuală
 //CUM FUNCTIONEAZA :
-//senzorul : "TAP(2,3)"->ViewModel(Dorele,muta "selectedCell"), scrie in (_state->@COMPOSE VEDE, O REFACE :
-// isSelected = true -> RebusCell : "ma colorez galben"
+//senzorul : "TAP(2,3)"->ViewModel(Dorele,muta "selectedCell"),
+//scrie in (_state->@COMPOSE VEDE, O REFACE :
+//isSelected = true -> RebusCell : "ma colorez galben"
 @Composable
 fun RebusCell(
     cell: Cell,//borcanul de pe raft
@@ -377,7 +378,7 @@ private fun KeyboardInput(//custom,Androida e mare
 }
 
 
-// ====================================================== minte
+// ======================================================
 // 5. UTIL
 // ======================================================
 

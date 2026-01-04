@@ -21,12 +21,12 @@ import sandpa.vafex.rebus_ro.ui.theme.Rebus_RoTheme
 class MainActivity : ComponentActivity() {//PORTALUL,APARITIA
     override fun onCreate(savedInstanceState: Bundle?) {//tap icoana->onCreate
         super.onCreate(savedInstanceState)//SE TREZESTE
-        setContent {//XML_bye,desenam cu Kotlin
+        setContent {//XML_bye,desenam cu Kotlin in Compose
             Rebus_RoTheme {//paleta de haine si culori
-                Surface(//modifier=eticheta de pe cutia "Surface" pe care scriu instructiuni
+                Surface(//modifier : eticheta de pe cutia "Surface" pe care scriu instructiuni
                     modifier = Modifier.fillMaxSize(),//Atlasul cu operatii "Modifier",
                                                         //din care aleg operatia "intinde-te
-                                                        //pe tot ecranul
+                                                        //pe tot ecranul"
                     //Surface e o coala alba de hartie intinsa pe tot ecranul
                     color = MaterialTheme.colorScheme.background
                 ) {
@@ -35,7 +35,7 @@ class MainActivity : ComponentActivity() {//PORTALUL,APARITIA
                     //creez VIEWMODEL-ul AICI (O singură dată, deasupra NavHost)
                     //este CREIERUL COMUN,creat aici sus ca sa fie folosit si de lista de rebusuri
                     //si de jocul_rebusul propriuzis,de-l faceam inauntru se reseta
-                    //folosim ktx extension(=viewModel()) pentru a-l păstra pe durata activității
+                    //folosim ktx extension( - viewModel()) pentru a-l păstra pe durata activității
                     val sharedViewModel: RebusViewModel = viewModel()
                     //shared, dosarul il citeste toata lumea
                     NavHost(navController = navController, startDestination = "lista") {

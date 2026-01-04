@@ -15,21 +15,35 @@ private const val BASE_URL =
     "https://gist.githubusercontent.com/"
 // Tot ce e până la gh-ul utilizatorului
 
-/**
- * Interfața care definește cererile HTTP.
- * Retrofit va implementa această interfață.
- */
+
+  //Interfața care definește cererile HTTP.
+  //Retrofit va implementa această interfață.
+  //Meniul la restaurant, retrofit e Bucatarul Retrofit
 interface RebusApiService {
     @GET("petean968/1a511d63553b380db7cc432cba5801ab/raw/rebusuri.json")
     // ATENȚIE: JSON-ul este o Listă de obiecte Rebus!
     suspend fun getRebusList(): List<Rebus>
+    /* asta (suspendataDeocamdata fun getRebusList()) este chemata aici,
+        in viewModel :
+
+     fun fetchRebusList() {
+
+    // Deschidem un context special (o Coroutină),care are comenzile :
+    // launch, suspend, cancel, viewModelScope, async, await
+
+    viewModelScope.launch {
+        try {
+
+            // Aici chemăm funcția "în așteptare"
+
+            val listaDeRebusuri = RebusApi.retrofitService.getRebusList() */
 }
 
-/**
- * Obiectul Singleton care oferă o singură instanță de Retrofit și RebusApiService.
- */
+
+  //Obiectul Singleton care oferă o singură instanță de Retrofit și RebusApiService.
+
 object RebusApi {
-    // 1. Interceptor pentru logare - util pentru debugging
+    // 1. Interceptor pentru logare - util pentru debugging, "senzor"
     private val logging = HttpLoggingInterceptor().apply {
         setLevel(HttpLoggingInterceptor.Level.BODY) // Arată corpul răspunsului în logcat
     }
@@ -54,6 +68,7 @@ object RebusApi {
 
     // 5. Instanța serviciului API (interfața implementată de Retrofit)
     val retrofitService: RebusApiService by lazy {
+        //by lazy : cand cere clientul, nu pune pe masa, ca se raceste
         retrofit.create(RebusApiService::class.java)
     }
 }
