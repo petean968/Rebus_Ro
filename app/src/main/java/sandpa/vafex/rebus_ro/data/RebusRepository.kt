@@ -6,7 +6,7 @@ import kotlinx.coroutines.withContext
 import sandpa.vafex.rebus_ro.network.RebusApi
 import java.io.IOException
 
-  //Repository care încarcă rebusul folosind Retrofit și serviciul API.
+  // Repository care încarcă rebusul folosind Retrofit și serviciul API.
   //"Administratorul de Date",decide de unde vin datele și să curețe  (erorile)
 
 class RebusRepository {
@@ -17,7 +17,8 @@ class RebusRepository {
     //DACA LUCRAI CU DAGGER(MAGAZIA DE SCULE)/HILT(NEA JAN DE LA SCULERIE),
     //AVEAM, in NetworkModule:
 
-    /* @Module
+    /*
+    @Module
     @InstallIn(SingletonComponent::class)
     object NetworkModule {
 
@@ -29,13 +30,16 @@ class RebusRepository {
                 .build()
                 .create(RebusApiService::class.java)
       }
-    }*/
+    }
+    */
     //SI AICI IN REBUS REPOSITORY :
-    /* class RebusRepository @Inject constructor(
+    /*
+    class RebusRepository @Inject constructor(
     private val rebusService: RebusApiService // Hilt o aduce aici automat!
 ) {
     // Fara sa scrii "=" nimic, Hilt știe de unde să o ia.
-} */
+}
+*/
 // @Component și @Subcomponent -> E Dagger !Java,Server,Android.
 // @HiltAndroidApp și @AndroidEntryPoint -> E Hilt.
     /* daca vrei Hilt, mai faci un pachet la nivel de MainActivity:
@@ -45,13 +49,13 @@ package sandpa.vafex.rebus_ro
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
 
-@HiltAndroidApp    // Aceasta este "borna" care pornește Hilt în tot proiectul
-class RebusApplication : Application() {
+@HiltAndroidApp    // INITIAZA Hilt în tot proiectul
+class RebusApplication : Application() {   }
     // De obicei rămâne goală, dar e "creierul" care trăiește
     // cât timp aplicația e deschisă (chiar dacă schimbi ecranele)
     // o treci obligatoriu in (AndroidManifest.xml)
 
-}
+
 De ce am folosi un framework de Dependency Injection (DI) precum Hilt?",
 
 
